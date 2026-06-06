@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>卢城安 - 项目展示</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Top App Bar -->
+  <header class="top-app-bar">
+    <span class="title">项目展示</span>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-avatar">卢</div>
+    <h1 class="hero-name">卢城安</h1>
+    <p class="hero-subtitle">机器人控制系统 & 嵌入式开发 & 强化学习 — 从底层算法到上层应用的全栈工程实践</p>
+    <div class="hero-tags">
+      <span class="hero-tag">嵌入式系统</span>
+      <span class="hero-tag">ROS 2</span>
+      <span class="hero-tag">运动控制</span>
+      <span class="hero-tag">强化学习</span>
+      <span class="hero-tag">前端开发</span>
+      <span class="hero-tag">Electron</span>
+    </div>
+  </section>
+
+  <!-- Projects -->
+  <section class="projects-section">
+    <h2 class="section-title">项目作品</h2>
+    <div class="projects-grid">
+
+      <!-- 1. 飞镖 -->
+      <a class="summary-card" href="project1.html">
+        <div class="summary-card-header">
+          <div class="summary-card-icon"><span class="material-icons-round">memory</span></div>
+          <div class="summary-card-title">RoboMaster 飞镖系统底层电控算法开发</div>
+        </div>
+        <div class="summary-card-body">
+          <div class="summary-card-tech">
+            <span class="tech-chip">STM32</span>
+            <span class="tech-chip">FreeRTOS</span>
+            <span class="tech-chip">C面向对象</span>
+            <span class="tech-chip">PID前馈</span>
+            <span class="tech-chip">CAN</span>
+            <span class="tech-chip">MIT协议</span>
+          </div>
+          <p class="summary-card-desc">三层解耦嵌入式架构，含 C 面向对象实例化、位掩码状态机与重力补偿伺服控制</p>
+        </div>
+        <div class="summary-card-footer">
+          <span>查看详情</span>
+          <span class="material-icons-round">arrow_forward</span>
+        </div>
+      </a>
+
+      <!-- 2. 机械臂 -->
+      <a class="summary-card" href="project2.html">
+        <div class="summary-card-header">
+          <div class="summary-card-icon"><span class="material-icons-round">precision_manufacturing</span></div>
+          <div class="summary-card-title">机械臂运动控制系统开发</div>
+        </div>
+        <div class="summary-card-body">
+          <div class="summary-card-tech">
+            <span class="tech-chip">扩展DH法</span>
+            <span class="tech-chip">六轴正逆解</span>
+            <span class="tech-chip">五次多项式</span>
+            <span class="tech-chip">RNEA</span>
+          </div>
+          <p class="summary-card-desc">研发低开销六轴机械臂控制算法，含解析逆解、零冲击轨迹规划与全动力学前馈补偿</p>
+        </div>
+        <div class="summary-card-footer">
+          <span>查看详情</span>
+          <span class="material-icons-round">arrow_forward</span>
+        </div>
+      </a>
+
+      <!-- 3. 英雄 -->
+      <a class="summary-card" href="project3.html">
+        <div class="summary-card-header">
+          <div class="summary-card-icon"><span class="material-icons-round">videocam</span></div>
+          <div class="summary-card-title">RoboMaster 英雄自定义图传与自定义客户端</div>
+        </div>
+        <div class="summary-card-body">
+          <div class="summary-card-tech">
+            <span class="tech-chip">ROS 2</span>
+            <span class="tech-chip">Python</span>
+            <span class="tech-chip">OpenCV</span>
+            <span class="tech-chip">Electron</span>
+            <span class="tech-chip">Vue</span>
+            <span class="tech-chip">GStreamer</span>
+          </div>
+          <p class="summary-card-desc">利用自定义客户端与机器人通信通道，实现 160fps 高频图传、弹道检测及跨平台操控客户端</p>
+        </div>
+        <div class="summary-card-footer">
+          <span>查看详情</span>
+          <span class="material-icons-round">arrow_forward</span>
+        </div>
+      </a>
+
+      <!-- 4. 宇树 -->
+      <a class="summary-card" href="project4.html">
+        <div class="summary-card-header">
+          <div class="summary-card-icon"><span class="material-icons-round">smart_toy</span></div>
+          <div class="summary-card-title">宇树 Go1 四足机器人强化学习步态控制</div>
+        </div>
+        <div class="summary-card-body">
+          <div class="summary-card-tech">
+            <span class="tech-chip">Python</span>
+            <span class="tech-chip">MuJoCo</span>
+            <span class="tech-chip">强化学习</span>
+            <span class="tech-chip">Gymnasium</span>
+            <span class="tech-chip">Sim-to-Real</span>
+          </div>
+          <p class="summary-card-desc">基于宇树 Go1 四足机器人，使用相位振荡器先验注入与复合奖励工程实现 Trot 步态</p>
+        </div>
+        <div class="summary-card-footer">
+          <span>查看详情</span>
+          <span class="material-icons-round">arrow_forward</span>
+        </div>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>卢城安 — 项目展示页面 &nbsp;|&nbsp; Material Design 3</p>
+  </footer>
+
+  <!-- FAB -->
+  <div class="fab" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="返回顶部">
+    <span class="material-icons-round">arrow_upward</span>
+  </div>
+
+  <script>
+    // Ripple on cards
+    document.querySelectorAll('.summary-card').forEach(card => {
+      card.addEventListener('click', function(e) {
+        const rect = this.getBoundingClientRect();
+        const ripple = document.createElement('span');
+        ripple.className = 'ripple';
+        const size = Math.max(rect.width, rect.height);
+        ripple.style.width = ripple.style.height = size + 'px';
+        ripple.style.left = (e.clientX - rect.left - size/2) + 'px';
+        ripple.style.top = (e.clientY - rect.top - size/2) + 'px';
+        this.appendChild(ripple);
+        setTimeout(() => ripple.remove(), 600);
+      });
+    });
+
+    // FAB visibility
+    const fab = document.querySelector('.fab');
+    window.addEventListener('scroll', () => {
+      fab.style.opacity = window.scrollY > 300 ? '1' : '0';
+      fab.style.pointerEvents = window.scrollY > 300 ? 'auto' : 'none';
+    });
+    fab.style.opacity = '0';
+    fab.style.pointerEvents = 'none';
+  </script>
+</body>
+</html>

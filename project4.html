@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>四足机器人强化学习步态控制 - 卢城安</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="page-enter">
+
+  <!-- Top App Bar -->
+  <header class="top-app-bar">
+    <a class="icon-btn" href="index.html">
+      <span class="material-icons-round">arrow_back</span>
+    </a>
+    <span class="title">四足机器人强化学习步态控制</span>
+  </header>
+
+  <div class="detail-page">
+
+    <!-- Hero Banner -->
+    <div class="detail-hero">
+      <div class="detail-hero-icon"><span class="material-icons-round">smart_toy</span></div>
+      <div class="detail-hero-text">
+        <h1 class="detail-hero-title">宇树 Go1 四足机器人强化学习步态控制开发</h1>
+        <p class="detail-hero-subtitle">基于宇树Go1四足机器人强化学习实现对角线行走</p>
+        <div class="detail-hero-tech">
+          <span class="tech-chip">Python</span>
+          <span class="tech-chip">MuJoCo</span>
+          <span class="tech-chip">强化学习</span>
+          <span class="tech-chip">Gymnasium</span>
+          <span class="tech-chip">Sim-to-Real</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Core Implementation -->
+    <div class="detail-section">
+      <h2 class="detail-section-title">
+        <span class="material-icons-round">build</span>
+        核心实现
+      </h2>
+
+      <div class="detail-subsection">
+        <h3 class="detail-subsection-title">基于 MuJoCo 与 Gymnasium 的强化学习环境构建</h3>
+        <p class="detail-text">搭建符合 Gymnasium 标准的 Unitree Go1 物理仿真底层环境。实现了包含机器人刚体位姿（四元数）、关节运动学状态、动作缓存及相位时钟在内的 49 维连续观测空间（Observation Space），以及 12 维力矩动作空间的物理动力学解算。</p>
+      </div>
+
+      <div class="detail-subsection">
+        <h3 class="detail-subsection-title">基于相位振荡器的步态先验注入</h3>
+        <p class="detail-text">针对四足无约束强化学习极易产生"非自然抽搐步态"的痛点，在底层设计了周期性时钟信号。通过设定相位偏移,将标准对角小跑（Trot）的步态先验以正余弦形式直接馈入神经网络观测层。同时，在奖励函数中设计了<strong>时钟-速度同步激励（Phase Sync Reward）</strong>，引导策略网络自主收敛出极具节律感的自然步态。</p>
+      </div>
+
+      <div class="detail-subsection">
+        <h3 class="detail-subsection-title">面向 Sim-to-Real 的动作平滑与复合奖励工程</h3>
+        <p class="detail-text">在控制侧引入了一阶动作低通滤波器，强效抑制高频动作抖动。精心设计了奖励函数，不仅包含前向速度追踪与存活奖励，还针对横向位移、偏航角漂移、机身姿态（Roll/Pitch）下坠以及关节偏离度施加严格惩罚，保障了真机硬件部署时的安全性与姿态鲁棒性。</p>
+      </div>
+    </div>
+
+    <!-- Demo Media -->
+    <div class="detail-media">
+      <h2 class="detail-media-title">
+        <span class="material-icons-round">play_circle</span>
+        工作成果
+      </h2>
+      <div class="media-grid">
+        <div>
+          <div class="media-item-title">机器狗 Trot 步态演示</div>
+          <video src="asset/机器狗步姿.mp4" controls></video>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>卢城安 — 项目展示页面 &nbsp;|&nbsp; Material Design 3</p>
+  </footer>
+
+  <!-- FAB -->
+  <div class="fab" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="返回顶部">
+    <span class="material-icons-round">arrow_upward</span>
+  </div>
+
+  <script>
+    const fab = document.querySelector('.fab');
+    window.addEventListener('scroll', () => {
+      fab.style.opacity = window.scrollY > 300 ? '1' : '0';
+      fab.style.pointerEvents = window.scrollY > 300 ? 'auto' : 'none';
+    });
+    fab.style.opacity = '0';
+    fab.style.pointerEvents = 'none';
+  </script>
+</body>
+</html>

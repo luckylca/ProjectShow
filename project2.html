@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>机械臂运动控制系统 - 卢城安</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="page-enter">
+
+  <!-- Top App Bar -->
+  <header class="top-app-bar">
+    <a class="icon-btn" href="index.html">
+      <span class="material-icons-round">arrow_back</span>
+    </a>
+    <span class="title">机械臂运动控制系统</span>
+  </header>
+
+  <div class="detail-page">
+
+    <!-- Hero Banner -->
+    <div class="detail-hero">
+      <div class="detail-hero-icon"><span class="material-icons-round">precision_manufacturing</span></div>
+      <div class="detail-hero-text">
+        <h1 class="detail-hero-title">机械臂运动控制系统开发</h1>
+        <p class="detail-hero-subtitle">研发一套低开销六轴机械臂控制算法</p>
+        <div class="detail-hero-tech">
+          <span class="tech-chip">扩展DH法</span>
+          <span class="tech-chip">六轴运动学正逆解</span>
+          <span class="tech-chip">五次多项式插值</span>
+          <span class="tech-chip">牛顿欧拉递归算法</span>
+          <span class="tech-chip">RNEA</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Core Implementation -->
+    <div class="detail-section">
+      <h2 class="detail-section-title">
+        <span class="material-icons-round">build</span>
+        核心实现
+      </h2>
+
+      <div class="detail-subsection">
+        <h3 class="detail-subsection-title">运动学解析解算法设计</h3>
+        <p class="detail-text">基于六轴球形腕（满足 Pieper 准则）构型，设计了位置与姿态解耦的代数解析逆解算法（几何法推导前三轴，旋转矩阵提取后三轴），并完善了奇异点的姿态保护逻辑；正向运动学基于标准齐次变换矩阵连乘实现。</p>
+      </div>
+
+      <div class="detail-subsection">
+        <h3 class="detail-subsection-title">零冲击关节轨迹规划</h3>
+        <p class="detail-text">在关节空间内引入五次多项式（Quintic Polynomial）结合时间归一化进行轨迹生成。在 50Hz 闭环周期下，确保了位置速度加速度运动状态的连续，消除了伺服系统的机械刚性冲击。</p>
+      </div>
+
+      <div class="detail-subsection">
+        <h3 class="detail-subsection-title">基于 RNEA 的全动力学前馈</h3>
+        <p class="detail-text">通过前向运动学计算连杆质心加速度，结合后向动力学内推连杆受力，实时计算六轴前馈力矩，实现高精度前馈补偿。</p>
+      </div>
+    </div>
+
+    <!-- Demo Media -->
+    <div class="detail-media">
+      <h2 class="detail-media-title">
+        <span class="material-icons-round">play_circle</span>
+        工作成果
+      </h2>
+      <div class="media-grid">
+        <div>
+          <div class="media-item-title">机械臂演示</div>
+          <video src="asset/机械臂演示.mp4" controls></video>
+        </div>
+      </div>
+      <div style="margin-top:16px">
+        <div class="media-item-title">前馈力矩演示</div>
+        <img src="asset/前馈力矩演示.png" alt="前馈力矩演示">
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>卢城安 — 项目展示页面 &nbsp;|&nbsp; Material Design 3</p>
+  </footer>
+
+  <!-- FAB -->
+  <div class="fab" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="返回顶部">
+    <span class="material-icons-round">arrow_upward</span>
+  </div>
+
+  <script>
+    const fab = document.querySelector('.fab');
+    window.addEventListener('scroll', () => {
+      fab.style.opacity = window.scrollY > 300 ? '1' : '0';
+      fab.style.pointerEvents = window.scrollY > 300 ? 'auto' : 'none';
+    });
+    fab.style.opacity = '0';
+    fab.style.pointerEvents = 'none';
+  </script>
+</body>
+</html>

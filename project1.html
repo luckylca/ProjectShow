@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>飞镖系统底层电控算法 - 卢城安</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <!-- Prism.js Okaidia theme (dark syntax highlighting) -->
+  <link href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-okaidia.min.css" rel="stylesheet">
+</head>
+<body class="page-enter">
+
+  <!-- Top App Bar -->
+  <header class="top-app-bar">
+    <a class="icon-btn" href="index.html">
+      <span class="material-icons-round">arrow_back</span>
+    </a>
+    <span class="title">飞镖系统底层电控算法</span>
+  </header>
+
+  <div class="detail-page">
+
+    <!-- Hero Banner -->
+    <div class="detail-hero">
+      <div class="detail-hero-icon"><span class="material-icons-round">memory</span></div>
+      <div class="detail-hero-text">
+        <h1 class="detail-hero-title">RoboMaster 飞镖系统底层电控算法开发</h1>
+        <p class="detail-hero-subtitle">研发一套具备精确位置伺服、稳定发射控制及高可复用性的嵌入式底层控制框架</p>
+        <div class="detail-hero-tech">
+          <span class="tech-chip">STM32</span>
+          <span class="tech-chip">FreeRTOS</span>
+          <span class="tech-chip">C面向对象</span>
+          <span class="tech-chip">PID与前馈复合控制</span>
+          <span class="tech-chip">CAN总线</span>
+          <span class="tech-chip">MIT控制协议</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 2.1: Architecture -->
+    <div class="detail-section">
+      <h2 class="detail-section-title">
+        <span class="material-icons-round">account_tree</span>
+        高可复用嵌入式软件架构设计
+      </h2>
+      <p class="detail-text">针对传统单片机代码耦合度高、维护困难的问题，从底层重构了软件框架，实现高度解耦：</p>
+
+      <div class="detail-subsection">
+        <h3 class="detail-subsection-title">三层解耦框架</h3>
+        <p class="detail-text">构建 BSP(硬件抽象层) → Module(模块层) → Application(应用层) 体系，规范并统一外设接口。</p>
+
+        <table class="detail-table">
+          <thead>
+            <tr><th>BSP 封装（芯片内部功能）</th><th>模块</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>通信类外设</td><td>usart spi i2c can usb</td></tr>
+            <tr><td>日志</td><td>log flash</td></tr>
+            <tr><td>功能型</td><td>gpio(exti) pwm adc</td></tr>
+            <tr><td>辅助</td><td>dwt</td></tr>
+          </tbody>
+        </table>
+
+        <table class="detail-table">
+          <thead>
+            <tr><th>Module 封装（中间层工具）</th><th>模块</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>电机</td><td>DJI、DM、瓴控LK、步进电机、舵机</td></tr>
+            <tr><td>通信</td><td>多板通信(CAN)、裁判系统、vofa协议、DT7-DR16遥控器</td></tr>
+            <tr><td>功能模块</td><td>蜂鸣器、oled、bmi088、ist8310、超级电容、TFminiPlus</td></tr>
+            <tr><td>应用支持</td><td>常用算法库、守护线程、消息中心</td></tr>
+          </tbody>
+        </table>
+
+        <p class="detail-text" style="margin-top:12px">Application 层作为命令发布主体：robot_cmd（命令发布）、gimbal（云台yaw控制）、chassis（蓄力电机控制）、shoot（发射与换弹控制）。日常只需维护 Application 层宏观逻辑，新增功能则新建 Module 层文件，对 Application 层暴露初始化和调用函数即可。</p>
+      </div>
+
+      <div class="detail-subsection">
+        <h3 class="detail-subsection-title">电机初始化配置示例</h3>
+        <pre class="code-block"><code class="language-c">Motor_Init_Config_s yaw_config = {
+    .can_init_config =
+        {
+            .can_handle = &hcan1,
+            .tx_id = 7,
+        },
+    .controller_param_init_config =
+        {
+            .angle_PID =
+                {
+                    .Kp = 10,
+                    .Ki = 0,
+                    .Kd = 0,
+                    .MaxOut = 80000,
+                },
+            .speed_PID =
+                {
+                    .Kp = 5,
+                    .Ki = 1,
+                    .Kd = 0,
+                    .Improve = PID_Integral_Limit,
+                    .IntegralLimit = 5000,
+                    .MaxOut = 10000,
+                },
+            .current_PID =
+                {
+                    .Kp = 0.5, // 0.7
+                    .Ki = 0.1, // 0.1
+                    .Kd = 0,
+                    .Improve = PID_Integral_Limit,
+                    .IntegralLimit = 5000,
+                    .MaxOut = 5000,
+                },
+        },
+    .controller_setting_init_config =
+        {
+            .angle_feedback_source = MOTOR_FEED,
+            .speed_feedback_source = MOTOR_FEED,
+            .outer_loop_type =
+                SPEED_LOOP,
+            .close_loop_type = CURRENT_LOOP | SPEED_LOOP | ANGLE_LOOP,
+            .motor_reverse_flag =
+                MOTOR_DIRECTION_NORMAL, //  MOTOR_DIRECTION_NORMAL
+                                        //  MOTOR_DIRECTION_REVERSE
+        },
+    .motor_type = M2006,
+    .storage_type = NO_STORAGE};
+yaw_motor = DJIMotorInit(&yaw_config);
+
+DJIMotorEnable(yaw_motor);
+DJIMotorOuterLoop(yaw_motor, ANGLE_LOOP);
+DJIMotorSetRef(yaw_motor, gimbal_cmd_recv.yaw);</code></pre>
+      </div>
+
+      <div class="detail-subsection">
+        <h3 class="detail-subsection-title">C风格面向对象</h3>
+        <p class="detail-text">采用 XXXInstance + Register 模式实现模块实例化，提升代码复用率。以下为 DJIMotorInit 核心实现：</p>
+        <pre class="code-block"><code class="language-c">static DJIMotorInstance *dji_motor_instance[DJI_MOTOR_CNT] = {NULL};
+DJIMotorInstance *DJIMotorInit(Motor_Init_Config_s *config)
+{
+    DJIMotorInstance *instance = (DJIMotorInstance *)malloc(sizeof(DJIMotorInstance));
+    memset(instance, 0, sizeof(DJIMotorInstance));
+    // motor basic setting 电机基本设置
+    instance->motor_type = config->motor_type;
+    instance->motor_settings = config->controller_setting_init_config;
+    // 初始化滤波器
+    DJIMotorFilterInit(&instance->measure);
+    // motor controller init 电机控制器初始化
+    PIDInit(&instance->motor_controller.current_PID, &config->controller_param_init_config.current_PID);
+    PIDInit(&instance->motor_controller.speed_PID, &config->controller_param_init_config.speed_PID);
+    PIDInit(&instance->motor_controller.angle_PID, &config->controller_param_init_config.angle_PID);
+    instance->motor_controller.other_angle_feedback_ptr = config->controller_param_init_config.other_angle_feedback_ptr;
+    instance->motor_controller.other_speed_feedback_ptr = config->controller_param_init_config.other_speed_feedback_ptr;
+    instance->motor_controller.current_feedforward_ptr = config->controller_param_init_config.current_feedforward_ptr;
+    instance->motor_controller.speed_feedforward_ptr = config->controller_param_init_config.speed_feedforward_ptr;
+    // 后续增加电机前馈控制器(速度和电流)
+    // 电机分组,因为至多4个电机可以共用一帧CAN控制报文
+    MotorSenderGrouping(instance, &config->can_init_config);
+    // 注册电机到CAN总线
+    config->can_init_config.can_module_callback = DecodeDJIMotor; // set callback
+    config->can_init_config.id = instance;                        // set id,eq to address(it is identity)
+    instance->motor_can_instance = CANRegister(&config->can_init_config);
+    // 注册守护线程
+    Daemon_Init_Config_s daemon_config = {
+        .callback = DJIMotorLostCallback,
+        .owner_id = instance,
+        .reload_count = 2, // 20ms未收到数据则丢失
+    };
+    instance->daemon = DaemonRegister(&daemon_config);
+
+    DJIMotorEnable(instance);
+    dji_motor_instance[idx++] = instance;
+    return instance;
+}</code></pre>
+      </div>
+
+      <div class="detail-subsection">
+        <h3 class="detail-subsection-title">DJIMotorControl 串级 PID 控制</h3>
+        <pre class="code-block"><code class="language-c">void DJIMotorControl()
+{
+    // 直接保存一次指针引用从而减小访存的开销,同样可以提高可读性
+    uint8_t group, num; // 电机组号和组内编号
+    int16_t set;        // 电机控制CAN发送设定值
+    DJIMotorInstance *motor;
+    Motor_Control_Setting_s *motor_setting; // 电机控制参数
+    Motor_Controller_s *motor_controller;   // 电机控制器
+    DJI_Motor_Measure_s *measure;           // 电机测量值
+    float pid_measure, pid_ref;             // 电机PID测量值和设定值
+
+    // 遍历所有电机实例,进行串级PID的计算并设置发送报文的值
+    for (size_t i = 0; i < idx; ++i)
+    { // 减小访存开销,先保存指针引用
+        motor = dji_motor_instance[i];
+        motor_setting = &motor->motor_settings;
+        motor_controller = &motor->motor_controller;
+        measure = &motor->measure;
+        pid_ref = motor_controller->pid_ref; // 保存设定值,防止motor_controller->pid_ref在计算过程中被修改
+        if (motor_setting->motor_reverse_flag == MOTOR_DIRECTION_REVERSE)
+            pid_ref *= -1; // 设置反转
+        // 计算位置环,只有启用位置环且外层闭环为位置时会计算速度环输出
+        if ((motor_setting->close_loop_type & ANGLE_LOOP) && motor_setting->outer_loop_type == ANGLE_LOOP)
+        {
+            if (motor_setting->angle_feedback_source == OTHER_FEED)
+                pid_measure = *motor_controller->other_angle_feedback_ptr;
+            else
+                pid_measure = measure->total_angle; // MOTOR_FEED,对total angle闭环,防止在边界处出现突跃
+            // 更新pid_ref进入下一个环
+            pid_ref = PIDCalculate(&motor_controller->angle_PID, pid_measure, pid_ref);
+        }
+
+        // 计算速度环,(外层闭环为速度或位置)且(启用速度环)时会计算速度环
+
+        if (motor->stop_flag == MOTOR_STOP)
+        {
+            pid_ref = 0;
+        }
+        else
+        {
+            // 计算电流环,目前只要启用了电流环就计算,不管外层闭环是什么,并且电流只有电机自身传感器的反馈
+        }
+
+        // 获取最终输出
+        set = (int16_t)pid_ref;
+        // 分组填入发送数据
+        group = motor->sender_group;
+        num = motor->message_num;
+        sender_assignment[group].tx_buff[2 * num] = (uint8_t)(set >> 8);         // 低八位
+        sender_assignment[group].tx_buff[2 * num + 1] = (uint8_t)(set & 0x00ff); // 高八位
+
+        // 双重保险: 停机时保持发送零电流
+        if (motor->stop_flag == MOTOR_STOP)
+            memset(sender_assignment[group].tx_buff + 2 * num, 0, sizeof(uint16_t));
+    }
+
+	//发送can数据
+}</code></pre>
+      </div>
+
+      <div class="detail-subsection">
+        <h3 class="detail-subsection-title">硬件灵活适配</h3>
+        <p class="detail-text">引入条件编译，一套代码即可兼容单板/双板硬件配置，大幅提升跨平台移植效率。使用 robot_def.h 文件存储所有需要修改的参数，用宏定义代替，可快速修改参数：</p>
+        <pre class="code-block"><code class="language-c">#define VIRSION // 使用视觉数据进行辅助瞄准
+// #define REFEREE //接入裁判系统
+
+/* 机器人重要参数定义,注意根据不同机器人进行修改,浮点数需要以.0或f结尾,无符号以u结尾 */
+
+#define BANJI_OPEN_ANGLE 0.098f    // 扳机舵机打开角度
+#define BANJI_CLOSE_ANGLE 0.082f // 扳机舵机关闭角度
+#define GRIPPER_1_LAY_ANGLE 0.111f // 夹爪1放置角度
+#define GRIPPER_1_NORMAL_ANGLE 0.075f // 夹爪1正常角度</code></pre>
+      </div>
+    </div>
+
+    <!-- Section 2.2: State Machine -->
+    <div class="detail-section">
+      <h2 class="detail-section-title">
+        <span class="material-icons-round">toggle_on</span>
+        极低开销的状态机
+      </h2>
+      <p class="detail-text">使用按位来处理每一个标志位，在面临多种状态结合起来一起判断时采用 Mask 遮罩方式处理，使用语法糖宏快速处理标志位：</p>
+      <pre class="code-block"><code class="language-c">#include "stdint.h"
+
+#define FLAG_TRIGGER_AT_LOAD_POS   (1 << 0)  // 扳机处于"接镖/装弹"位置
+#define FLAG_TRIGGER_AT_SHOOT_POS  (1 << 1)  // 扳机处于"蓄能/发射"位置
+#define FLAG_RELOAD_ROTATED        (1 << 2)  // 旋转换弹电机到位
+
+// [发射条件]：扳机顶出发射位 + 蓄力电机OK + 云台瞄准OK + 飞镖已装 + 视觉到位
+#define MASK_READY_TO_FIRE (FLAG_TRIGGER_AT_SHOOT_POS | \
+                            FLAG_L_CHARGE_REACHED | FLAG_R_CHARGE_REACHED | \
+                            FLAG_L_REBOUND_REACHED | FLAG_R_REBOUND_REACHED | \
+                            FLAG_GIMBAL_AIMED | \
+                            FLAG_DART_DROPPED | \
+                            FLAG_IN_PLACE)
+
+// 语法糖宏
+#define DART_SET_BIT(idx, flag)      (DartSys.statusFlags[idx] |= (flag))
+#define DART_CHECK_MASK(idx, mask)   ((DartSys.statusFlags[idx] & (mask)) == (mask))</code></pre>
+    </div>
+
+    <!-- Section 2.3: Gravity Compensation -->
+    <div class="detail-section">
+      <h2 class="detail-section-title">
+        <span class="material-icons-round">speed</span>
+        基于重力补偿的高精度伺服控制算法
+      </h2>
+      <p class="detail-text">在换弹过程中负载不均匀的情况下，通过对换弹部分的结构进行建模，读取电机角度，计算旋转换弹电机的前馈力矩，并通过 MIT 控制协议发送给 DM6220 电机。</p>
+    </div>
+
+    <!-- Demo Media -->
+    <div class="detail-media">
+      <h2 class="detail-media-title">
+        <span class="material-icons-round">play_circle</span>
+        工作成果
+      </h2>
+      <div class="media-grid">
+        <div>
+          <div class="media-item-title">飞镖换弹演示</div>
+          <video src="asset/换弹.mp4" controls></video>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>卢城安 — 项目展示页面 &nbsp;|&nbsp; Material Design 3</p>
+  </footer>
+
+  <!-- FAB -->
+  <div class="fab" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="返回顶部">
+    <span class="material-icons-round">arrow_upward</span>
+  </div>
+
+  <!-- Prism.js core + C language -->
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-c.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-clike.min.js"></script>
+
+  <script>
+    const fab = document.querySelector('.fab');
+    window.addEventListener('scroll', () => {
+      fab.style.opacity = window.scrollY > 300 ? '1' : '0';
+      fab.style.pointerEvents = window.scrollY > 300 ? 'auto' : 'none';
+    });
+    fab.style.opacity = '0';
+    fab.style.pointerEvents = 'none';
+  </script>
+</body>
+</html>
