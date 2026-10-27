@@ -323,6 +323,8 @@ button:focus-visible, a:focus-visible {
   border-radius: 5px 20px 5px 20px;
   box-shadow: var(--shadow-card);
   overflow: hidden;
+  opacity: 1;
+  animation: none;
   transform: perspective(1000px) rotateX(var(--card-rx)) rotateY(var(--card-ry));
   transition: box-shadow .45s var(--ease-book), transform .45s var(--ease-book), border-color .3s;
   isolation: isolate;
@@ -343,48 +345,63 @@ button:focus-visible, a:focus-visible {
   box-shadow: 0 22px 48px rgba(48,70,48,.14), 0 3px 6px rgba(48,70,48,.04);
   transform: perspective(1000px) rotateX(var(--card-rx)) rotateY(var(--card-ry)) translateY(-6px);
 }
+.portfolio-home .summary-card-art {
+  position: relative;
+  height: clamp(138px, 16vw, 190px);
+  overflow: hidden;
+  background: #dce6d3;
+  border-bottom: 1px solid rgba(69,94,65,.11);
+}
+.portfolio-home .summary-card-art::after {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(35,60,43,.04), transparent 42%, rgba(35,60,43,.2));
+  content: "";
+  pointer-events: none;
+}
+.portfolio-home .summary-card-art img,
+.portfolio-home .summary-card-art video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  filter: saturate(.78) contrast(.96);
+  transform: scale(1.015);
+  transition: transform .9s var(--ease-book), filter .5s;
+}
+.portfolio-home .summary-card:nth-child(1) .summary-card-art img { object-position: center 47%; }
+.portfolio-home .summary-card:nth-child(2) .summary-card-art img { object-position: center 48%; }
+.portfolio-home .summary-card:nth-child(3) .summary-card-art img { object-position: center 42%; }
+.portfolio-home .summary-card:nth-child(4) .summary-card-art video { object-position: center 50%; }
+.portfolio-home .summary-card:hover .summary-card-art img,
+.portfolio-home .summary-card:hover .summary-card-art video {
+  transform: scale(1.055);
+  filter: saturate(.94) contrast(1);
+}
 .portfolio-home .summary-card-header {
   position: relative;
-  min-height: 132px;
-  align-items: flex-end;
+  min-height: 90px;
+  align-items: center;
   gap: 14px;
-  padding: 26px 24px 20px;
-  color: #fffdf2;
-  background-color: #45694f;
-  background-image: linear-gradient(0deg, rgba(34,62,45,.88), rgba(34,62,45,.1)), url("asset/portfolio-landscape.svg");
-  background-size: cover;
-  background-position: center 58%;
-}
-.portfolio-home .summary-card:nth-child(1) .summary-card-header {
-  background-image: linear-gradient(0deg, rgba(34,62,45,.9), rgba(34,62,45,.16)), url("asset/捕捉弹道.png");
-  background-position: center 47%;
-}
-.portfolio-home .summary-card:nth-child(2) .summary-card-header {
-  background-image: linear-gradient(0deg, rgba(34,62,45,.9), rgba(34,62,45,.16)), url("asset/前馈力矩演示.png");
-  background-position: center 45%;
-}
-.portfolio-home .summary-card:nth-child(3) .summary-card-header {
-  background-image: linear-gradient(0deg, rgba(34,62,45,.91), rgba(34,62,45,.2)), url("asset/自定义客户端.png");
-  background-position: center 42%;
-}
-.portfolio-home .summary-card:nth-child(4) .summary-card-header {
-  background-image: linear-gradient(0deg, rgba(34,62,45,.91), rgba(34,62,45,.15)), url("asset/portfolio-landscape.svg");
-  background-position: 75% 70%;
+  padding: 18px 24px 12px;
+  color: var(--ink);
+  background: transparent;
 }
 .portfolio-home .summary-card-icon {
   flex: 0 0 42px;
   width: 42px;
   height: 42px;
-  border: 1px solid rgba(255,255,255,.52);
-  border-radius: 50%;
-  color: #fff8e5;
-  background: rgba(247,244,224,.16);
+  border: 1px solid rgba(65,94,67,.17);
+  border-radius: 50% 45% 50% 45%;
+  color: var(--moss-deep);
+  background: #e5ead9;
   font-size: 21px;
-  backdrop-filter: blur(8px);
+  transform: rotate(-4deg);
 }
 .portfolio-home .summary-card-title {
   max-width: 350px;
-  color: #fffdf2;
+  color: #294635;
   font-size: clamp(14px, 1.35vw, 17px);
   font-weight: 600;
   line-height: 1.55;
@@ -477,6 +494,21 @@ button:focus-visible, a:focus-visible {
   border-radius: 5px 28px 5px 28px;
   box-shadow: var(--shadow-soft);
   overflow: hidden;
+}
+.portfolio-page.project-page-dart .detail-hero {
+  background-image: linear-gradient(90deg, rgba(232,239,221,.96) 0%, rgba(232,239,221,.88) 46%, rgba(232,239,221,.42) 100%), url("asset/捕捉弹道.png");
+  background-position: center, center 45%;
+  background-size: cover;
+}
+.portfolio-page.project-page-arm .detail-hero {
+  background-image: linear-gradient(90deg, rgba(232,239,221,.97) 0%, rgba(232,239,221,.88) 47%, rgba(232,239,221,.38) 100%), url("asset/前馈力矩演示.png");
+  background-position: center, center 44%;
+  background-size: cover;
+}
+.portfolio-page.project-page-video .detail-hero {
+  background-image: linear-gradient(90deg, rgba(232,239,221,.97) 0%, rgba(232,239,221,.88) 48%, rgba(232,239,221,.32) 100%), url("asset/自定义客户端.png");
+  background-position: center, center 43%;
+  background-size: cover;
 }
 .portfolio-page .detail-hero::after {
   position: absolute;
@@ -679,12 +711,19 @@ button:focus-visible, a:focus-visible {
   opacity: 1;
   transform: translateY(0);
 }
-.has-motion .portfolio-home .hero-avatar { animation: sealAppear .9s .1s var(--ease-book) both; }
-.has-motion .portfolio-home .hero-name { animation: titleAppear .9s .18s var(--ease-book) both; }
-.has-motion .portfolio-home .hero-subtitle { animation: titleAppear .9s .28s var(--ease-book) both; }
-.has-motion .portfolio-home .hero-tags { animation: titleAppear .9s .38s var(--ease-book) both; }
+body.has-motion.portfolio-home .hero-avatar { animation: sealAppear .9s .1s var(--ease-book) both; }
+body.has-motion.portfolio-home .hero-name { animation: titleAppear .9s .18s var(--ease-book) both; }
+body.has-motion.portfolio-home .hero-subtitle { animation: titleAppear .9s .28s var(--ease-book) both; }
+body.has-motion.portfolio-home .hero-tags { animation: titleAppear .9s .38s var(--ease-book) both; }
 @keyframes sealAppear { from { opacity: 0; transform: translateY(12px) rotate(-14deg) scale(.9); } to { opacity: 1; transform: translateY(0) rotate(-6deg) scale(1); } }
 @keyframes titleAppear { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+
+body.has-motion.portfolio-home .summary-card.reveal-on-scroll.is-revealed {
+  transform: perspective(1000px) rotateX(var(--card-rx, 0deg)) rotateY(var(--card-ry, 0deg));
+}
+body.has-motion.portfolio-home .summary-card.reveal-on-scroll.is-revealed:hover {
+  transform: perspective(1000px) rotateX(var(--card-rx, 0deg)) rotateY(var(--card-ry, 0deg)) translateY(-6px);
+}
 
 @media (min-width: 1400px) {
   .portfolio-home .hero { padding-left: max(9vw, calc((100vw - 1260px)/2)); }
@@ -711,7 +750,8 @@ button:focus-visible, a:focus-visible {
   .portfolio-home .projects-section { padding: 72px 20px 84px; }
   .portfolio-home .projects-section::before { top: 31px; right: 20px; font-size: 8px; }
   .portfolio-home .projects-grid { grid-template-columns: 1fr; gap: 18px; }
-  .portfolio-home .summary-card-header { min-height: 118px; }
+  .portfolio-home .summary-card-art { height: 150px; }
+  .portfolio-home .summary-card-header { min-height: 82px; padding: 15px 18px 10px; }
   .portfolio-page .detail-page { padding: 24px 16px 76px; }
   .portfolio-page .detail-hero { align-items: flex-start; gap: 16px; padding: 24px 20px; }
   .portfolio-page .detail-hero-icon { flex-basis: 48px; width: 48px; height: 48px; font-size: 21px; }
